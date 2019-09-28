@@ -1,0 +1,25 @@
+<html>
+  <head>
+	<title>Figure!</title>
+    <link rel="stylesheet" href="https://cdn.pydata.org/bokeh/release/bokeh-1.2.0.min.css" type="text/css" />
+    <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-1.2.0.min.js"></script>
+    {{ script | safe }}
+  </head>
+  <body>
+    <div class=page>
+      <h2></h2>
+      {{ div | safe }}
+    </div>
+	{% block content %}
+	<form action="" method="post" novalidate>
+		{{ form.hidden_tag() }}
+		<p>{{ form.back() }}</p>
+	</form>
+	{% endblock %}
+	    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  </body>
+</html>
