@@ -1,10 +1,10 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
-from wtforms.validators import DataRequired, Length, ValidationError
+from wtforms import StringField, SubmitField, TextAreaField
+from wtforms.validators import DataRequired, Length, ValidationError, InputRequired
 
 class Abstract(FlaskForm):
-    symbol = StringField('Abstract',
-                           validators=[DataRequired()])
+    abstract = TextAreaField('Abstract',
+                           validators=[InputRequired()])
                            
     submit = SubmitField('Confirm')
 
