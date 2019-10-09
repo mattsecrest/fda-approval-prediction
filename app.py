@@ -36,9 +36,6 @@ def prediction():
 def about():
    return render_template("about.html")
  
-@app.route('/how',methods=['GET','POST'])
-def how():
-   return render_template("how.html")
 
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=True)

@@ -1,11 +1,54 @@
 {% extends "base.html" %}
 {% block content %}
+<style>
+  .bottom-two {
+     margin-bottom: 2cm;
+  }
+</style>
 <body>
     <div class="container">
       <div class="row">
         <div class="col-lg-12 text-left">
-          <h2>Matthew H. Secrest, MSc</h2>
-			<h5>Matt is NOT a front-end developer</h5>
+          <h1>Concept</h1>
+			  <p>
+			  Stock prices of pharmaceutical drug manufacturers depend on many factors.
+			  The pipeline of drugs approved for the FDA is one major factor, particularly for small companies.
+			  Consider the price of Karyopharm therapeutics below.
+			  On July 3, 2019, Karyopharm's drug Selinexor was approved for use in patients with Multiple Myeloma, leading to a spike in stock price.
+			  </p>
+			  <img src="/static/KPTI.png" alt="" style = "width:792px; height:528px;" align="middle"/>
+			  <p class="bottom-two">
+			  </p>
+			  <p>
+			  Investors attempt to predict drug approval in order to profit from lower drug prices for drugs that will eventually be approved.
+			  This process is laborious: it requires knowledge of alternative therapies, the disease area, the FDA approval process, etc. 
+			  </p>
+			  
+			  <b> What if there was a rhetorical question that could be answered by a tool? This tool could estimate the probability of FDA approval for a medication based
+			  solely on the abstract of the clinical trial results. This tool could help casual investors identify drugs with high likelihood of approval using minimal effort.
+			  There is. This is the tool. Or this is a tool, there may be other tools I am not familiar with.</b>
+			  <p class="bottom-two">
+			  </p>
+		  <h1>How it works</h1>
+			  <p>
+			  Right now, it absolutely does not, but it will soon. The tool uses use natural language processing (NLP) to identify subleties in the clinical trial results 
+			  abstract that may be predictive of FDA approval. Three data sources combine to create the training dataset:
+			  </p>
+		  		  
+			  <h5>ClinicalTrials.gov</h5>
+			  <p>This data source was used to get data on all clinical trials of drugs or biologics which were initiated after 1990.</p>
+			  <h5>FDA.gov</h5>
+			  <p>This data source was used for data on FDA drug approvals. Two linkage methods (so far) have been used to link it to the clinical trials data source: unique drug name, and 'other' clinical trial name.
+		  	  <h5>PubMed.com</h5>
+			  <p>Abstracts of clinical trials since 1990 with an abstract published on PubMed were scraped to get text of results which may be predictive of FDA approval.
+			  The cumulative number of abstracts in the database by publication date is below (left), with the corresponding dates of FDA approval for a subset of the drugs in these abstracts noted in the figure on the right.</p>
+		  
+			  <p><img src="/static/cumsum2.png" alt="" style="float:right;width:528px;height:352px;"></p>
+			  <p><img src="/static/cumsum.png" alt="" style="float:left;width:528px;height:352px;"></p>
+			  
+			  <p class="bottom-two">
+			  </p>
+			 
         </div>
       </div>
     </div>
