@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Oct  7 14:18:18 2019
+Created on Thu Oct  10 16:24:18 2019
 
 @author: matth
 """
 
-"BRING IN IMPORTANT MODULES"
 import pandas as pd
 import pickle
 from sklearn import model_selection
@@ -26,49 +25,8 @@ from sklearn.linear_model import Ridge
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 import numpy as np
-from sklearn.naive_bayes import BernoulliNB
 
-"LOAD MAIN ANALYTIC DATASET"
-df = pickle.load(open(r'C:\Users\matth\OneDrive\Documents\GitHub\trials-and-fda\df_np_on.p','rb'))
 
-"START EXTRACTING FEATURES"
-"1) Separate into train and test sets and numpy arrays"
-x_train, x_test, y_train, y_test = [i.to_numpy() for i in model_selection.train_test_split(df.crudeabs, df.approved, test_size=0.4, shuffle=True, random_state=42)]
-
-"2) Clean abstracts"
-def removeSections(abstract):
-    abstract = abstract.lower()
-    # First remove major section headers
-    for firstreplacers in ['conclusions:','conclusion:','result:','results:',
-                  'background:','introduction:','methods:','objective:',
-                  'objectives:','purpose:','aims: ','clinicaltrials.gov',
-                  'context', 'design and settings']:
-        abstract = abstract.replace(firstreplacers,'').strip()
-        
-    # Then remove copyright symbols
-    for cr in [u'\N{COPYRIGHT SIGN}','copyright']:
-        abstract = re.sub(cr+'.*','',abstract)
-        
-    # Remove NCT numbers
-    abstract = re.sub('nct\d{8}','',abstract)
-    
-    # Replace some odd values
-    abstract = re.sub('\N{MIDDLE DOT}','.',abstract)
-    
-    return abstract
-
-"3) Create extract p function"
-def p_valEquals(abstract): # This will take the value of 0 (does not exist), 1 (at least one p-value lower than 0.05), 2 (p-values exist but none lower than 0.05)
-    out = 0
-    ps = [float(out[-1]) for out in re.findall('([P{0,1}|p{0,1}]\-{0,1}(value){0,1}\s{0,1}\=\s{0,1})([0,9]\.[0-9]{0,5})',abstract)]
-    if ps != []:
-        out = 2
-        for pval in ps:
-            if pval<=0.05:
-                out = 1
-    return out
-
-"4) Create clean abstracts transformer"
 class cleanAbs(base.BaseEstimator, base.RegressorMixin):
     def __init__(self):
         return None
@@ -102,8 +60,7 @@ class cleanAbs(base.BaseEstimator, base.RegressorMixin):
         abstract = re.sub('\N{MIDDLE DOT}','.',abstract)
         
         return abstract
-
-"5) Create extractP transformer"
+       
 class extractPequals(base.BaseEstimator, base.RegressorMixin):
     def __init__(self):
         return None
@@ -127,38 +84,8 @@ class extractPequals(base.BaseEstimator, base.RegressorMixin):
                     out = 1
         return out
     
-
-"6) Create Lemmatizer"
 class LemmaTokenizer(object):
     def __init__(self):
         self.wnl = WordNetLemmatizer()
     def __call__(self, doc):
         return [self.wnl.lemmatize(t) for t in word_tokenize(doc)]
-
-"""
-NOW TUNE A REAL PIPELINE
-"""
-bernpipe = Pipeline([
-         ('cA',cleanAbs()),
-         ('cV',CountVectorizer(tokenizer=LemmaTokenizer(),max_df=.95,min_df=.05,stop_words='english')),
-         ('bn',BernoulliNB())
-])
-bernpipe_params = {
-    'cV__max_df':[.9,],
-    'cV__min_df':[.05],
-    'cV__max_features':[None],
-    'bn__alpha':[0.5]
-}
-    
-gbernpipe = model_selection.GridSearchCV(bernpipe,param_grid=bernpipe_params,cv=4,return_train_score=True)
-gbernpipe.fit(x_train,y_train)
-
-bestimator = gbernpipe.best_estimator_
-xt = cleanAbs().transform(x_train)
-fc = CountVectorizer(tokenizer=LemmaTokenizer(),max_df=.95,min_df=.05,stop_words='english')
-fc.fit_transform(xt)
-fn = fc.get_feature_names()
-
-"Pickle best estimatar for the Heroku app"
-pickle.dump(bestimator,open(r'C:\Users\matth\OneDrive\Documents\GitHub\trials-and-fda\bestimator.p','wb'))
-pickle.dump(fn,open(r'C:\Users\matth\OneDrive\Documents\GitHub\trials-and-fda\fn.p','wb'))

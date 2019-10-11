@@ -4,7 +4,7 @@ from forms import Abstract, goBack
 from bokeh.plotting import figure, output_file, show
 from bokeh.embed import components
 from bokeh.models import BoxSelectTool, BoxZoomTool,ResetTool,WheelZoomTool,LassoSelectTool
-from main_analysis import cleanAbs, extractPequals, LemmaTokenizer 
+from custom_classifiers import cleanAbs,extractPequals,LemmaTokenizer
 import pandas as pd
 from config import Config
 import pickle
@@ -27,6 +27,7 @@ from sklearn.linear_model import LogisticRegression
 import numpy as np
 
 bestimator = pickle.load(open('bestimator.p','rb'))
+fn = pickle.load(open('fn.p','rb'))
 
 app = Flask(__name__)
 
@@ -49,10 +50,19 @@ def index():
 @app.route('/prediction',methods = ['GET','POST'])
 def prediction():
     back = goBack()
+    outstr = ''
+    for word in session['abstract'].split(' '):
+        if word in fn:
+            if word not in outstr:
+                outstr = outstr + word + ',\n'
+    if outstr=='':
+        outstr='No relevant features'
+    else:
+        outstr=outstr[:-2]
     est = round(bestimator.predict_proba([session['abstract']])[0][1]*100,2)
     if back.validate_on_submit():
         return redirect(url_for('index'))
-    return render_template('prediction.html',est = est)
+    return render_template('prediction.html',est = est,outstr=outstr)
 
 @app.route('/about',methods=['GET','POST'])
 def about():
