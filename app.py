@@ -51,19 +51,34 @@ def index():
 @app.route('/prediction',methods = ['GET','POST'])
 def prediction():
     back = goBack()
+    outdict = {}
     outstr = ''
     for word in session['abstract'].split(' '):
-        if word in fn:
-            if word not in outstr:
-                outstr = outstr + word + ',\n'
-    if outstr=='':
+        if word in words_z:
+            outdict[word] = words_z[word]
+            outstr += word + ",\n"
+    if not outdict:
         outstr='No relevant features'
-    else:
+        script = ''
+        div = ''
+      
+    elif outdict:
         outstr=outstr[:-2]
+        outdict = {key:val for key, val in sorted(outdict.items(), key=lambda item: item[1], reverse = True)}
+        x = list(outdict.keys())
+        y = list(outdict.values())
+        p = figure(x_range=x, plot_height=250, title="Words contributing to prediction", toolbar_location = None, tools="")
+        p.vbar(x = x, top = y, width = 0.9)
+        p.yaxis.axis_label = 'Relative contribution'
+        p.xaxis.major_label_orientation = "vertical"
+        script,div = components(p)
+        
     est = round(bestimator.predict_proba([session['abstract']])[0][1]*100,2)
+    
     if back.validate_on_submit():
         return redirect(url_for('index'))
-    return render_template('prediction.html',est = est,outstr=outstr)
+    
+    return render_template('prediction.html',est = est,outstr=outstr, script = script, div = div)
 
 @app.route('/about',methods=['GET','POST'])
 def about():
