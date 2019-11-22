@@ -28,6 +28,7 @@ import numpy as np
 
 bestimator = pickle.load(open('bestimator.p','rb'))
 fn = pickle.load(open('fn.p','rb'))
+words_z = pickle.load(open('words_z.p','rb'))
 
 app = Flask(__name__)
 
